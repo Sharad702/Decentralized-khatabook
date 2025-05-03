@@ -31,4 +31,13 @@ export interface AppState {
 
 export interface CustomerWithBalance extends Customer {
   balance: string;
+}
+
+export interface Product {
+  id: number;
+  name: string;
+  description: string;
+  quantity: number;
+  price: number;
+  exists: boolean;
 } 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import { useWeb3 } from '../contexts/Web3Context';
-import { navigateToDashboard, navigateToCustomers, navigateToTransactions } from '../utils/navigation';
+import { navigateToDashboard, navigateToCustomers, navigateToTransactions, navigateToInventory } from '../utils/navigation';
 
 const Header: React.FC = () => {
   const { account, isConnected, connectWallet } = useWeb3();
@@ -83,6 +83,14 @@ const Header: React.FC = () => {
                 style={navButtonStyle('/transactions')}
               >
                 Transactions
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={navigateToInventory}
+                style={navButtonStyle('/inventory')}
+              >
+                Inventory
               </button>
             </li>
           </ul>

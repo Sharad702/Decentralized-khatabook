@@ -4,38 +4,43 @@ interface LoadingSpinnerProps {
   message?: string;
 }
 
-const spinAnimation = `
-  @keyframes spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-`;
-
-const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ 
-  message = 'Loading...' 
-}) => {
+const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ message }) => {
   return (
     <div style={{
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      justifyContent: 'center',
-      padding: '1rem'
+      gap: '1rem'
     }}>
-      <style>
-        {spinAnimation}
-      </style>
       <div style={{
-        width: '3rem',
-        height: '3rem',
+        width: '2.5rem',
+        height: '2.5rem',
+        border: '3px solid #E5E7EB',
+        borderTopColor: '#4F46E5',
         borderRadius: '50%',
-        border: '2px solid #e5e7eb',
-        borderTopColor: '#3b82f6',
-        animation: 'spin 1s linear infinite',
-        marginBottom: '0.75rem'
-      }}></div>
-      <p style={{ color: '#4b5563' }}>{message}</p>
+        animation: 'spin 1s linear infinite'
+      }} />
+      {message && (
+        <div style={{
+          color: '#6B7280',
+          fontSize: '0.875rem'
+        }}>
+          {message}
+        </div>
+      )}
+
+      <style>
+        {`
+          @keyframes spin {
+            from {
+              transform: rotate(0deg);
+            }
+            to {
+              transform: rotate(360deg);
+            }
+          }
+        `}
+      </style>
     </div>
   );
 };

@@ -15,13 +15,25 @@ contract DecentralizedKhatabook {
         bool settled;
     }
 
+    struct Product {
+        string name;
+        string description;
+        uint256 quantity;
+        uint256 price;
+        bool exists;
+    }
+
     mapping(address => Customer) public customers;
     mapping(address => Entry[]) public entries;
+    mapping(uint256 => Product) public products;
+    uint256 public productCount;
     address[] public customerAddresses;
 
     event CustomerAdded(address indexed customerAddress, string name, string mobileNumber);
     event EntryAdded(address indexed customerAddress, int256 amount, string description);
     event EntrySettled(address indexed customerAddress, uint256 entryIndex);
+    event ProductAdded(uint256 indexed productId, string name, uint256 quantity, uint256 price);
+    event ProductUpdated(uint256 indexed productId, uint256 quantity, uint256 price);
 
     function addCustomer(address _customerAddress, string memory _name, string memory _mobileNumber) public {
         require(!customers[_customerAddress].exists, "Customer already exists");
@@ -90,5 +102,78 @@ contract DecentralizedKhatabook {
 
     function getCustomerAddresses() public view returns (address[] memory) {
         return customerAddresses;
+    }
+
+    function addProduct(
+        string memory _name,
+        string memory _description,
+        uint256 _quantity,
+        uint256 _price
+    ) public {
+        require(bytes(_name).length > 0, "Product name cannot be empty");
+        require(_price > 0, "Price must be greater than 0");
+
+        productCount++;
+        products[productCount] = Product({
+            name: _name,
+            description: _description,
+            quantity: _quantity,
+            price: _price,
+            exists: true
+        });
+
+        emit ProductAdded(productCount, _name, _quantity, _price);
+    }
+
+    function updateProduct(
+        uint256 _productId,
+        uint256 _quantity,
+        uint256 _price
+    ) public {
+        require(products[_productId].exists, "Product does not exist");
+        require(_price > 0, "Price must be greater than 0");
+
+        products[_productId].quantity = _quantity;
+        products[_productId].price = _price;
+
+        emit ProductUpdated(_productId, _quantity, _price);
+    }
+
+    function getProduct(uint256 _productId) public view returns (Product memory) {
+        require(products[_productId].exists, "Product does not exist");
+        return products[_productId];
+    }
+
+    function getAllProducts() public view returns (Product[] memory) {
+        Product[] memory allProducts = new Product[](productCount);
+        for (uint256 i = 1; i <= productCount; i++) {
+            if (products[i].exists) {
+                allProducts[i - 1] = products[i];
+            }
+        }
+        return allProducts;
+    }
+
+    function addEntryWithInventory(
+        address _customerAddress,
+        int256 _amount,
+        string memory _description,
+        uint256 _productId,
+        uint256 _quantity
+    ) public {
+        require(customers[_customerAddress].exists, "Customer does not exist");
+        require(products[_productId].exists, "Product does not exist");
+        require(products[_productId].quantity >= _quantity, "Insufficient inventory");
+
+        products[_productId].quantity -= _quantity;
+
+        entries[_customerAddress].push(Entry({
+            timestamp: block.timestamp,
+            amount: _amount,
+            description: _description,
+            settled: false
+        }));
+
+        emit EntryAdded(_customerAddress, _amount, _description);
     }
 }

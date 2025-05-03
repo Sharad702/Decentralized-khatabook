@@ -4,7 +4,7 @@ import { AbiItem } from 'web3-utils';
 import detectEthereumProvider from '@metamask/detect-provider';
 import DecentralizedKhatabook from '../contracts/DecentralizedKhatabook.json';
 import contractAddress from '../config/contract-address.json';
-import { Customer, Entry } from '../interfaces';
+import { Customer, Entry, Product } from '../interfaces';
 
 const CONTRACT_ADDRESS = contractAddress.DecentralizedKhatabook;
 
@@ -182,4 +182,125 @@ export async function settleEntry(
     console.error('Error in settleEntry:', error);
     throw error;
   }
-} 
+}
+
+export const addProduct = async (
+  contract: Contract<AbiItem[]>,
+  account: string,
+  name: string,
+  description: string,
+  quantity: number,
+  price: number
+): Promise<void> => {
+  try {
+    const gas = await contract.methods
+      .addProduct(name, description, quantity, price)
+      .estimateGas({ from: account });
+    
+    await contract.methods
+      .addProduct(name, description, quantity, price)
+      .send({ from: account, gas: gas.toString() });
+  } catch (error) {
+    console.error('Error in addProduct:', error);
+    throw error;
+  }
+};
+
+export const updateProduct = async (
+  contract: Contract<AbiItem[]>,
+  account: string,
+  productId: number,
+  quantity: number,
+  price: number
+): Promise<void> => {
+  try {
+    const gas = await contract.methods
+      .updateProduct(productId, quantity, price)
+      .estimateGas({ from: account });
+    
+    await contract.methods
+      .updateProduct(productId, quantity, price)
+      .send({ from: account, gas: gas.toString() });
+  } catch (error) {
+    console.error('Error in updateProduct:', error);
+    throw error;
+  }
+};
+
+export const getProduct = async (
+  contract: Contract<AbiItem[]>,
+  account: string,
+  productId: number
+): Promise<Product> => {
+  try {
+    const product = await contract.methods.getProduct(productId).call({ from: account }) as {
+      name: string;
+      description: string;
+      quantity: string;
+      price: string;
+      exists: boolean;
+    };
+    
+    return {
+      id: productId,
+      name: product.name,
+      description: product.description,
+      quantity: Number(product.quantity),
+      price: Number(product.price),
+      exists: product.exists
+    };
+  } catch (error) {
+    console.error('Error in getProduct:', error);
+    throw error;
+  }
+};
+
+export const getAllProducts = async (
+  contract: Contract<AbiItem[]>,
+  account: string
+): Promise<Product[]> => {
+  try {
+    const products = await contract.methods.getAllProducts().call({ from: account }) as Array<{
+      name: string;
+      description: string;
+      quantity: string;
+      price: string;
+      exists: boolean;
+    }>;
+    
+    return products.map((product, index) => ({
+      id: index + 1,
+      name: product.name,
+      description: product.description,
+      quantity: Number(product.quantity),
+      price: Number(product.price),
+      exists: product.exists
+    })).filter((product: Product) => product.exists);
+  } catch (error) {
+    console.error('Error in getAllProducts:', error);
+    throw error;
+  }
+};
+
+export const addEntryWithInventory = async (
+  contract: Contract<AbiItem[]>,
+  account: string,
+  customerAddress: string,
+  amount: number,
+  description: string,
+  productId: number,
+  quantity: number
+): Promise<void> => {
+  try {
+    const gas = await contract.methods
+      .addEntryWithInventory(customerAddress, amount, description, productId, quantity)
+      .estimateGas({ from: account });
+    
+    await contract.methods
+      .addEntryWithInventory(customerAddress, amount, description, productId, quantity)
+      .send({ from: account, gas: gas.toString() });
+  } catch (error) {
+    console.error('Error in addEntryWithInventory:', error);
+    throw error;
+  }
+}; 

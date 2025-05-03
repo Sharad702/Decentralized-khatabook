@@ -6,6 +6,7 @@ import DashboardPage from './pages/DashboardPage';
 import CustomersPage from './pages/CustomersPage';
 import CustomerDetailsPage from './pages/CustomerDetailsPage';
 import TransactionsPage from './pages/TransactionsPage';
+import InventoryPage from './pages/InventoryPage';
 import ErrorMessage from './components/ErrorMessage';
 import { setNavigate } from './utils/navigation';
 import './App.css';
@@ -46,6 +47,7 @@ const AppContent = () => {
             <Route path="/customers" element={<CustomersPage />} />
             <Route path="/customer/:customerAddress" element={<CustomerDetailsPage />} />
             <Route path="/transactions" element={<TransactionsPage />} />
+            <Route path="/inventory" element={<InventoryPage />} />
           </Routes>
         )}
       </main>

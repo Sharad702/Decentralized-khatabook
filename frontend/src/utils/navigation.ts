@@ -47,4 +47,13 @@ export const navigateToTransactions = () => {
   if (navigate) {
     navigate('/transactions');
   }
+};
+
+/**
+ * Navigate to the inventory page
+ */
+export const navigateToInventory = () => {
+  if (navigate) {
+    navigate('/inventory');
+  }
 }; 

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useWeb3 } from '../contexts/Web3Context';
 import { getEntries, getBalance } from '../utils/web3';
 import { Entry } from '../interfaces';
+import { generateInvoice } from '../utils/invoice';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 const CustomerDetailsPage: React.FC = () => {
@@ -12,6 +13,7 @@ const CustomerDetailsPage: React.FC = () => {
   const [balance, setBalance] = useState<string>('0');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const customer = customers.find(c => c.customerAddress === customerAddress);
 
@@ -78,6 +80,75 @@ const CustomerDetailsPage: React.FC = () => {
       minHeight: 'calc(100vh - 4rem)',
       backgroundColor: '#F9FAFB'
     }}>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: '1.5rem'
+      }}>
+        <h1 style={{
+          fontSize: '1.5rem',
+          fontWeight: 'bold'
+        }}>Customer Details</h1>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <button
+            onClick={() => {
+              if (customer && customerAddress) {
+                generateInvoice(customer, entries, customerAddress, balance);
+              }
+            }}
+            style={{
+              backgroundColor: '#4F46E5',
+              color: 'white',
+              padding: '0.5rem 1rem',
+              borderRadius: '0.375rem',
+              border: 'none',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              fontSize: '0.875rem',
+              transition: 'all 0.2s',
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.backgroundColor = '#4338CA';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.backgroundColor = '#4F46E5';
+            }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '1rem', height: '1rem' }}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+            </svg>
+            Download Invoice
+          </button>
+          <button
+            onClick={() => navigate(-1)}
+            style={{
+              backgroundColor: '#F3F4F6',
+              color: '#374151',
+              padding: '0.5rem 1rem',
+              borderRadius: '0.375rem',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: '0.875rem',
+              transition: 'all 0.2s',
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.backgroundColor = '#E5E7EB';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.backgroundColor = '#F3F4F6';
+            }}
+          >
+            Back
+          </button>
+        </div>
+      </div>
       <div style={{
         backgroundColor: 'white',
         padding: '1.5rem',
